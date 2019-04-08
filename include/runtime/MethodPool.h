@@ -136,3 +136,35 @@ private:
     PureVacantIndexContainer VacantIndexStack;
 } GenCodePool(100);
 
+class MethodEntry {
+    UShort access_flags;
+    UShort name_index;
+    UShort descriptor_index;
+    UShort attribute_count;
+    UInt   method_res_pos;
+public:
+    bool GetAccessFlags(string flag) {
+        switch (flag) {
+            case "ACC_STATIC":
+                return access_flags & 0x0008;
+            case "ACC_FINAL":
+                return access_flags & 0x0010;
+            case "ACC_PUBLIC":
+                return access_flags & 0x0001;
+            case "ACC_PRIVATE":
+                return access_flags & 0x0002;
+        }
+    }
+
+    UShort GetNameIndex() {
+        return name_index;
+    }
+
+    UShort GetTypeIndex() {
+        return descriptor_index;
+    }
+
+    MethodEntry() {
+
+    }
+};
