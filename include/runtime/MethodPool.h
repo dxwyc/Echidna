@@ -2,18 +2,7 @@
 #include <vector>
 #include <stack>
 #include "../types/General.h"
-
-// [ClassName] CodeAttribute
-// 存储代码信息的
-class CodeAttribute {
-    UShort max_stack;
-    UShort max_local;
-    UInt code_length;
-    UShort attributes_count;
-public:
-    CodeAttribute() {
-    }
-};
+#include "Attribute.h"
 
 // [ClassName] PureCode
 // 纯十六进制的方法区代码存储
@@ -21,15 +10,30 @@ class PureCode {
     HexCode* pData;
     UInt code_length;
     UShort current_pos;
-    CodeAttribute code_attribute; // 其他属性
+    // CodeAttribute code_attribute; // 其他属性
+
+    UShort max_stack;
+    UShort max_locals;
+    UInt code_length;
+    UShort attributes_count;
 public:
 	PureCode():code_length(0), current_pos(0) {pData = NULL;}
-    PureCode(UInt _codeLength, UBytePtr _codeString):code_length(_codeLength) {
+    PureCode(CODE* pCode) {
         pData = new HexCode[_codeLength + 1];
         current_pos = 0;
+
+        max_stack = pCode->max_stack;
+        max_locals = pCode->max_locals;
+        code_length = pCode->code_length;
+        attributes_count = pCode->attributes_count;
+
         for (auto x = 0; x < code_length; x++)
-            *(pData+x) = *_codeString++;
+            *(pData+x) = *(pCode->code+x);
     }
+
+    UShort GetMaxStack() {return max_stack;}
+    UShort GetMaxLocals() {return max_locals;}
+    UInt GetCodeLength() {return code_length;}
 
     ~PureCode() {delete[] pData;}
 
@@ -87,18 +91,18 @@ public:
     using PureVacantIndexContainer = std::stack<UInt>;
     PureCodePool(UInt poolLength) {
         CodePool.resize(poolLength);
-        PoolLength = PoolLength;
+        PoolLength = poolLength;
         for (auto k = poolLength - 1; k >= 1; k--) {
             VacantIndexStack.push(k);
         }
     }
 
-    UInt Reserve(UInt _codeLength, UBytePtr _codeString) {
+    UInt Reserve(CODE* pCode) { // UInt _codeLength, UBytePtr _codeString) {
         if (VacantIndexStack.empty()) // 分配PureCode失败
             return 0;
         UInt reserved_slot = VacantIndexStack.top();
         VacantIndexStack.pop();
-        CodePool[reserved_slot] = new PureCode(_codeLength, _codeString);
+        CodePool[reserved_slot] = new PureCode(pCode); //_codeLength, _codeString);
         return reserved_slot;
     }
 
@@ -137,34 +141,75 @@ private:
 } GenCodePool(100);
 
 class MethodEntry {
-    UShort access_flags;
-    UShort name_index;
-    UShort descriptor_index;
+    bool ACC_PUBLIC;
+    bool ACC_PRIVATE;
+    bool ACC_PROTECTED;
+    bool ACC_STATIC;
+    bool ACC_FINAL;
+    bool ACC_SYNCHRONIZED;
+    bool ACC_BRIDGE;
+    bool ACC_VARARGS;
+    bool ACC_NATIVE;
+    bool ACC_ABSTRACT;
+    bool ACC_STRICTFP;
+    bool ACC_SYNTHETIC;
+
+    NAT name;
+    NAT descriptor;
+    NAT name_and_descriptor;
+
     UShort attribute_count;
     UInt   method_res_pos;
 public:
     bool GetAccessFlags(string flag) {
         switch (flag) {
             case "ACC_STATIC":
-                return access_flags & 0x0008;
+                return ACC_STATIC;
             case "ACC_FINAL":
-                return access_flags & 0x0010;
+                return ACC_FINAL;
             case "ACC_PUBLIC":
-                return access_flags & 0x0001;
+                return ACC_PUBLIC;
             case "ACC_PRIVATE":
-                return access_flags & 0x0002;
+                return ACC_RPIVATE;
+            case "ACC_ABSTRACT":
+                return ACC_ABSTRACT;
+            case "ACC_NATIVE":
+                return ACC_NATIVE;
+            default:
+                return 0;
         }
     }
 
-    UShort GetNameIndex() {
-        return name_index;
-    }
+    MethodEntry() {}
 
-    UShort GetTypeIndex() {
-        return descriptor_index;
-    }
+    MethodEntry(METHODINFO* pmi, class_info* pkl) {
+        ACC_PUBLIC = pmi->ACC_PUBLIC;
+        ACC_PRIVATE = pmi->ACC_PRIVATE;
+        ACC_PROTECTED = pmi->ACC_PROTECTED;
+        ACC_STATIC = pmi->ACC_STATIC;
+        ACC_FINAL = pmi->ACC_FINAL;
+        ACC_SYNCHRONIZE = pmi->ACC_SYNCHRONIZE
+        ACC_BRIDGE = pmi->ACC_BRIDGE;
+        ACC_VARARGS = pmi->ACC_VARARGS;
+        ACC_NATIVE = pmi->ACC_NATIVE;
+        ACC_ABSTRACT = pmi->ACC_ABSTRACT;
+        ACC_STRICTFP = pmi->ACC_STRICTFP;
+        ACC_SYNTHETIC = pmi->ACC_SYNTHETIC; 
 
-    MethodEntry() {
+        auto info = pmi->get_info(pkl);
 
+        name = info.first
+        descriptor = info.second;
+
+        name_and_descriptor = name + descriptor; 
+
+        attribute_count = pmi->attribute_count;
+        method_res_pos = GenCodePool.Reserve(pmi->attributes[pmi->get_code_index()]); //pmi->get_code_length(), pmi->get_code());
     }
+    
+    NAT GetName() {return name;}
+    NAT GetDescriptor() {return descriptor;}
+    NAT GetNameAndDescriptor() {return name_and_descriptor;}
+
+    UInt GetMethodResPos() { return method_res_pos; }
 };

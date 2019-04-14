@@ -22,4 +22,7 @@ class HeapHandlePool {
 public:
     HeapHandlePool() {}
     HeapHandlePool(int); 
+    HeapHandleUnit* retriveOneHanle();
+    HeapHandleUnit* retriveSeveralHandle();
+
 };
