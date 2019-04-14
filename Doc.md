@@ -24,6 +24,10 @@ Attributes:
     bool ACC_ANNOTATION;
     bool ACC_ENUM;
 ```
+Methods:
+```
+string get_class_name(int index);   //直接返回常量池第i号元素的类名，i必须是类
+```
 
 ## class `CONSTANT_METATYPE`
 这个是所有常量池类型的元类，实现了虚函数用来取类型、值等操作
@@ -64,6 +68,9 @@ Methods:
         else if (ACC_PRIVATE) return PRIVATE;
         else return PROTECTED;
     }
+    uchar* get_code(); //获取该方法的字节码
+    ushort get_code_length(); //获取字节码长度
+    pair<string,string> get_info(); //返回pair,第一个分量是方法名，第二个分量是描述符（参数类型+返回类型）
 ```
 
 ## class `FIELDINFO`
