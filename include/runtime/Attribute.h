@@ -1,16 +1,14 @@
 #include "../types/General.h"
 #include "ClassBase.h"
 
+/*
 struct AttributeInfo {
     UShort attribute_name_index;
     UInt attribute_length;
     AttributeInfo(ATTRIBUTEINFO *pattr) {
     }
 };
-
-class FieldInfo {
-
-};
+*/
 
 // [ClassName] CodeAttribute
 // 存储代码信息的

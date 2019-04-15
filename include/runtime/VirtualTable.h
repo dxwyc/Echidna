@@ -10,13 +10,13 @@ using std::map;
 // 
 class VirtualTable {
     using MapContainerType = map<string, int>;
-    using ContainerType = vector<MethodEntry*>;
+    using ContainerType = std::vector<MethodEntry*>;
 
     MapContainerType nameMap;
     ContainerType entryList;
 public:
-    VirtualTable(pClass* pkl); 
-    
+    VirtualTable(pClass* pkl);
+   /* 
         if (pkl==NULL) throw "Cannot create virtual tables for NULL!";
 
         VirtualTable* vtpFatherClass = NULL;
@@ -51,7 +51,7 @@ public:
             }
         }
     }
-
+    */
     MethodEntry* GetVirtualEntry(string nat) { // nat for NameAndType
         if (!nameMap.count(nat)) return NULL;
         return entryList[nameMap[nat]];

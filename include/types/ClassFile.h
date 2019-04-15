@@ -1,7 +1,7 @@
 #include "../runtime/VirtualTable.h"
 #include "../runtime/ClassBase.h"
-#include "../runtime/ClassLoader.h"
 #include "../runtime/ConstantPool.h"
+#include "ClassLoader.h"
 #include <assert.h>
 
 // [ClassName] pClass
@@ -38,7 +38,9 @@ public:
     UShort field_count;
     UShort method_count;
 
-    pClass() {}
+    pClass();
+    pClass(class_file*);
+    /*
     pClass(class_file* pcf):ACC_PUBLIC(pcf->ACC_PUBLIC), ACC_FINAL(pcf->ACC_FINAL), ACC_SUPER(pcf->ACC_SUPER), ACC_INTERFACE(pcf->ACC_INTERFACE), 
         ACC_ABSTRACT(pcf->ACC_ABSTRACT), ACC_SYNTHETIC(pcf->ACC_SYNTHETIC), ACC_ANNOTATION(pcf->ACC_ANNOTATION), ACC_ENUM(pcf->ACC_ENUM) {
             magic = pcf->magic;
@@ -75,19 +77,19 @@ public:
             if (!ClassLoader::LoadClass(this)) {
                 throw "Can't load this class into runtime environment.";
             }
-    }
+    }*/
 
-    int MakeVirtualTable() {
+    int MakeVirtualTable() ;/*{
         vtp = new VirtualTable(this);
         return vtp == NULL;
     }
-
-    int MakeStaticMethodTable() {
+*/
+    int MakeStaticMethodTable();/* {
         smtp = new StaticMethodTable(this);
         return smtp == NULL;
     }
-
-    ~pClass() {
+*/
+    ~pClass(); /* {
         if (vtp != NULL) delete vtp;
         if (smtp != NULL) delete smtp;
         if (arrMethod != NULL) { 
@@ -100,7 +102,7 @@ public:
                 if (arrField[k] != NULL) delete arrField[k];
             delete[] arrField;
         }
-    }
+    }*/
 
     UBoolean is_loaded();
 };

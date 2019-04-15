@@ -32,6 +32,7 @@ public:
     virtual void* GetValue() {return NULL;}
     virtual NAT GetNameAndType() {return "";}
     virtual ~ConstantPoolMetaType() {}
+    virtual int resolved(ConstantPool*) {};
 };
 
 class ConstantPoolRefType: public ConstantPoolMetaType {
@@ -53,7 +54,7 @@ public:
         } 
         return nat;
     }
-}
+};
 
 class ConstantPoolValueType: public ConstantPoolMetaType {
     void* value;
@@ -80,13 +81,13 @@ public:
         delete value;
     }
     void* GetValue() { return value; }
-}
+};
 
 class ConstantPoolNAT: public ConstantPoolMetaType {
     UInt name_index, descriptor_index;
     string nat;
 public:
-    ConstantPoolNAT(UInt _name_index, _descriptor_index) {
+    ConstantPoolNAT(UInt _name_index, UInt _descriptor_index) {
         name_index = _name_index;
         descriptor_index = _descriptor_index;
         nat = "";
@@ -96,7 +97,7 @@ public:
     NAT GetNameAndType() {
         return nat;
     }
-}
+};
 
 class ConstantPool {
     ConstantPoolMetaType** cpm;
@@ -104,7 +105,7 @@ class ConstantPool {
 public:
     ConstantPool(CONSTANT_METATYPE** pcm, UShort ConstantPoolCount) {
         constant_pool_count = ConstantPoolCount;
-        cpm = new CONSTANT_METATYPE[constant_pool_count];
+        cpm = new ConstantPoolMetaType*[constant_pool_count];
         for (int i = 0; i < ConstantPoolCount; i++) {
             auto instype = pcm[i]->get_instance_type();
             if (instype == CONS_METATYPE) throw "ConstantPool can't have any CONS_METATYPE entry!";
